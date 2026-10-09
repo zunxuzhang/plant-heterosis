@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="植物杂种优势精选文献库：按主题、作物、年代和研究类型快速检索经典论文、机制研究与育种应用。"
+    />
+    <title>植势文献 | 植物杂种优势研究库</title>
+    <link rel="icon" href="assets/leaf-mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#library" aria-label="返回文献库首页">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" role="img">
+            <path d="M6 21.5C7.2 12 13.5 6.5 25.5 5.5c.7 11.9-4 19-13.5 19.8" />
+            <path d="M6.5 25.5c2.8-5.8 6.7-10.2 12.4-14.2" />
+          </svg>
+        </span>
+        <span>
+          <strong>植势文献</strong>
+          <small>Plant Heterosis Library</small>
+        </span>
+      </a>
+
+      <nav class="main-nav" aria-label="主导航">
+        <button class="nav-item is-active" type="button" data-view="library">文献库</button>
+        <button class="nav-item" type="button" data-view="insights">主题图谱</button>
+        <button class="nav-item" type="button" data-view="saved">
+          收藏夹
+          <span class="nav-count" id="savedNavCount" hidden>0</span>
+        </button>
+      </nav>
+
+      <button class="header-action" id="headerExport" type="button" title="导出当前筛选结果为 RIS">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 3v12" />
+          <path d="m7 10 5 5 5-5" />
+          <path d="M5 21h14" />
+        </svg>
+        <span>导出题录</span>
+      </button>
+    </header>
+
+    <main>
+      <section class="hero" id="library" aria-labelledby="pageTitle">
+        <div class="hero-copy">
+          <p class="eyebrow">HETEROSIS RESEARCH ATLAS</p>
+          <h1 id="pageTitle">植物杂种优势精选文献库</h1>
+          <p class="hero-desc">
+            从经典假说、位点鉴定到杂种预测，串起遗传、表观、转录与育种应用中的关键证据。
+          </p>
+
+          <div class="search-shell" role="search">
+            <svg class="icon search-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-4-4" />
+            </svg>
+            <label class="sr-only" for="searchInput">搜索文献</label>
+            <input
+              id="searchInput"
+              type="search"
+              autocomplete="off"
+              placeholder="搜索题目、作者、作物、机制或关键词..."
+            />
+            <kbd>/</kbd>
+          </div>
+
+          <div class="hero-meta" aria-label="文献库统计">
+            <span><strong id="heroPaperCount">0</strong> 篇精读条目</span>
+            <span><strong id="heroCropCount">0</strong> 类作物场景</span>
+            <span><strong id="heroThemeCount">0</strong> 个研究主题</span>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-label="杂种优势效应示意">
+          <div class="visual-header">
+            <div>
+              <span class="chart-kicker">YIELD PERFORMANCE</span>
+              <h2>杂种优势效应</h2>
+            </div>
+            <div class="trait-switch" role="group" aria-label="选择性状">
+              <button class="trait-btn is-active" type="button" data-trait="yield">产量</button>
+              <button class="trait-btn" type="button" data-trait="biomass">生物量</button>
+              <button class="trait-btn" type="button" data-trait="vigor">长势</button>
+            </div>
+          </div>
+          <div class="performance-chart" id="performanceChart" aria-live="polite"></div>
+          <div class="chart-foot">
+            <span><i class="legend-dot parent-a"></i>亲本 A</span>
+            <span><i class="legend-dot parent-b"></i>亲本 B</span>
+            <span><i class="legend-dot hybrid"></i>杂交种 F1</span>
+          </div>
+          <p class="chart-note" id="chartNote">
+            中性模型：F1 综合双亲互补优势，并可能产生非加性效应。
+          </p>
+        </div>
+      </section>
+
+      <section class="library-view" id="libraryView">
+        <div class="workspace">
+          <aside class="filter-panel" aria-label="文献筛选">
+            <div class="filter-heading">
+              <div>
+                <span class="section-label">FILTERS</span>
+                <h2>精细筛选</h2>
+              </div>
+              <button class="text-button" id="resetFilters" type="button">重置</button>
+            </div>
+
+            <div class="filter-group">
+              <div class="filter-title-row">
+                <h3>团队专题</h3>
+                <span id="teamFilterSummary">全部</span>
+              </div>
+              <div class="filter-list" id="teamFilters"></div>
+            </div>
+
+            <div class="filter-group">
+              <div class="filter-title-row">
+                <h3>研究主题</h3>
+                <span id="themeFilterSummary">全部</span>
+              </div>
+              <div class="filter-list" id="themeFilters"></div>
+            </div>
+
+            <div class="filter-group">
+              <div class="filter-title-row">
+                <h3>作物 / 物种</h3>
+                <span id="cropFilterSummary">全部</span>
+              </div>
+              <div class="chip-cloud" id="cropFilters"></div>
+            </div>
+
+            <div class="filter-group">
+              <div class="filter-title-row">
+                <h3>发表年代</h3>
+              </div>
+              <div class="segmented" id="decadeFilters" role="group" aria-label="发表年代">
+                <button class="is-active" type="button" data-decade="all">全部</button>
+                <button type="button" data-decade="classic">1900–1979</button>
+                <button type="button" data-decade="modern">1980–2009</button>
+                <button type="button" data-decade="genomic">2010+</button>
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <div class="filter-title-row">
+                <h3>文献类型</h3>
+              </div>
+              <div class="radio-list" id="typeFilters"></div>
+            </div>
+          </aside>
+
+          <div class="results-panel">
+            <div class="results-toolbar">
+              <div>
+                <span class="section-label">CURATED PAPERS</span>
+                <h2>
+                  <span id="resultTitle">全部文献</span>
+                  <span class="result-count" id="resultCount">0 篇</span>
+                </h2>
+              </div>
+
+              <div class="toolbar-actions">
+                <button class="icon-button" id="compactToggle" type="button" title="切换紧凑视图" aria-pressed="false">
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 6h16" />
+                    <path d="M4 12h16" />
+                    <path d="M4 18h16" />
+                  </svg>
+                </button>
+                <label class="select-control">
+                  <span>排序</span>
+                  <select id="sortSelect">
+                    <option value="relevance">主题相关度</option>
+                    <option value="year-desc">年份从新到旧</option>
+                    <option value="year-asc">年份从旧到新</option>
+                    <option value="title">题目 A–Z</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+
+            <div class="active-filters" id="activeFilters" hidden></div>
+            <div class="paper-grid" id="paperGrid"></div>
+            <div class="empty-state" id="emptyState" hidden>
+              <div class="empty-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48">
+                  <circle cx="21" cy="21" r="12" />
+                  <path d="m30 30 9 9" />
+                  <path d="M15 23c3-5 8-7 13-4" />
+                </svg>
+              </div>
+              <h3>没有匹配的文献</h3>
+              <p>尝试减少筛选条件，或使用更宽泛的关键词。</p>
+              <button class="primary-button" id="clearEmptyFilters" type="button">清除筛选</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="insights-view" id="insightsView" hidden>
+        <div class="insights-hero">
+          <div>
+            <span class="section-label">EVIDENCE MAP</span>
+            <h1>从“魔力”到可解释的遗传网络</h1>
+            <p>
+              文献证据横跨数量遗传、基因互作、表观调控、转录剂量与基因组选择。这里按机制和应用场景重新组织。
+            </p>
+          </div>
+          <div class="insight-summary" id="insightSummary"></div>
+        </div>
+
+        <div class="insight-grid">
+          <article class="insight-panel timeline-panel">
+            <div class="panel-heading">
+              <div>
+                <span class="section-label">TIMELINE</span>
+                <h2>研究重心迁移</h2>
+              </div>
+              <span class="panel-note">按发表年代统计</span>
+            </div>
+            <div class="timeline-chart" id="timelineChart"></div>
+          </article>
+
+          <article class="insight-panel theme-panel">
+            <div class="panel-heading">
+              <div>
+                <span class="section-label">THEMES</span>
+                <h2>主题构成</h2>
+              </div>
+            </div>
+            <div class="theme-distribution" id="themeDistribution"></div>
+          </article>
+
+          <article class="insight-panel evidence-panel">
+            <div class="panel-heading">
+              <div>
+                <span class="section-label">MECHANISMS</span>
+                <h2>机制证据速览</h2>
+              </div>
+            </div>
+            <div class="mechanism-list" id="mechanismList"></div>
+          </article>
+
+          <article class="insight-panel crop-panel">
+            <div class="panel-heading">
+              <div>
+                <span class="section-label">CROPS</span>
+                <h2>作物与应用场景</h2>
+              </div>
+            </div>
+            <div class="crop-matrix" id="cropMatrix"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="saved-view" id="savedView" hidden>
+        <div class="saved-header">
+          <div>
+            <span class="section-label">MY COLLECTION</span>
+            <h1>收藏夹</h1>
+            <p>把需要精读、组会分享或写入综述的条目集中在一起。</p>
+          </div>
+          <div class="saved-actions">
+            <button class="secondary-button" id="clearSaved" type="button">清空收藏</button>
+            <button class="primary-button" id="savedExport" type="button">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3v12" />
+                <path d="m7 10 5 5 5-5" />
+                <path d="M5 21h14" />
+              </svg>
+              导出 RIS
+            </button>
+          </div>
+        </div>
+        <div class="saved-list" id="savedList"></div>
+        <div class="empty-state saved-empty" id="savedEmpty" hidden>
+          <div class="empty-icon saved-empty-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48">
+              <path d="M14 7h20a3 3 0 0 1 3 3v31l-13-8-13 8V10a3 3 0 0 1 3-3Z" />
+            </svg>
+          </div>
+          <h3>尚未收藏文献</h3>
+          <p>在文献卡片上点击书签图标，即可加入个人阅读清单。</p>
+          <button class="primary-button" id="goToLibrary" type="button">浏览文献库</button>
+        </div>
+      </section>
+    </main>
+
+    <dialog class="paper-dialog" id="paperDialog">
+      <div class="dialog-shell">
+        <button class="dialog-close" id="dialogClose" type="button" aria-label="关闭详情">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m6 6 12 12" />
+            <path d="M18 6 6 18" />
+          </svg>
+        </button>
+        <div id="dialogContent"></div>
+      </div>
+    </dialog>
+
+    <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

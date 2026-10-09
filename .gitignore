@@ -1,0 +1,6 @@
+plant-heterosis-site.zip
+.chrome-profile-*/
+.edge-profile-*/
+*.log
+.DS_Store
+Thumbs.db

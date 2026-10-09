@@ -1,0 +1,28 @@
+server {
+    listen 80;
+    listen [::]:80;
+
+    # 绑定域名后改成自己的域名；只用公网 IP 访问时保留 _
+    server_name example.com www.example.com;
+
+    # 指向服务器上包含 index.html 的目录
+    root /var/www/plant-heterosis;
+    index index.html;
+
+    charset utf-8;
+    access_log /var/log/nginx/plant-heterosis.access.log;
+    error_log /var/log/nginx/plant-heterosis.error.log;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location ~* \.(?:css|js|svg|png|jpg|jpeg|webp|ico|woff2?)$ {
+        expires 7d;
+        add_header Cache-Control "public, max-age=604800";
+        try_files $uri =404;
+    }
+
+    gzip on;
+    gzip_types text/plain text/css application/javascript application/json image/svg+xml;
+}
